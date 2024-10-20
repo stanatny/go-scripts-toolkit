@@ -1,5 +1,3 @@
-module github.com/stanatny/go-scripts-toolkit
+module github.com/stanatny/go-scripts
 
 go 1.19
-
-replace github.com/stanatny/go-scripts-toolkit => ../
