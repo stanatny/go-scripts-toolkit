@@ -1,0 +1,19 @@
+# Go
+/bin/
+/pkg/
+/vendor/
+
+# Python
+__pycache__/
+*.pyc
+
+# Shell
+*.log
+
+# General
+.DS_Store
+
+# Scripts
+data/es_data_loader/*/*.json
+!data/es_data_loader/test-index/*.*
+
