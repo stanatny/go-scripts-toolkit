@@ -1,6 +1,5 @@
 # Go
 /bin/
-/pkg/
 /vendor/
 
 # Python
