@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/stanatny/go-scripts/pkg/esloader"
+	"github.com/stanatny/go-scripts-toolkit/pkg/esloader"
 )
 
 func main() {
