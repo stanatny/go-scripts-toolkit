@@ -5,12 +5,16 @@ A Go-based script library for setting up test environments, generating test data
 ```perl
 go-scripts-toolkit/           # Root directory
 ├── cmd/                      # Go main program entry points
-│   └── es-data-loader/       # ES test data construction tool entry
-│       └── main.go           # Main entry point for ES data loader
+│   ├── es-data-loader/       # ES test data construction tool entry
+│   │   └── main.go           # Main entry point for ES data loader
+│   └── data-cleaner/         # Data cleaner tool entry
+│       └── main.go           # Main entry point for data cleaner
 ├── pkg/                      # Go packages and reusable libraries
-│   └── esloader/             # ES data loading library
-│       ├── loader.go         # Data import implementation
-│       └── mapping.go        # ES mapping operations
+│   ├── esloader/             # ES data loading library
+│   │   ├── loader.go         # Data import implementation
+│   │   └── mapping.go        # ES mapping operations
+│   └── cleaner/              # Data cleaning utilities
+│       └── cleaner.go        # Data cleaning implementation
 ├── data/                     # Data directory
 │   └── es_data_loader/       # Data for the ES data loader
 │       └── test-index/       # Sample index
@@ -50,6 +54,24 @@ To add a new data set:
 1. Create a new subdirectory under `data/es_data_loader/` named after the desired index.
 2. Add a `mapping.json` file in the new subdirectory to define the index mapping.
 3. Add one or more `doc_{id}.json` files for the documents you want to import.
+
+### Data Cleaner
+The `data-cleaner` script, located in `cmd/data-cleaner/`, is a tool for cleaning up all test data. Currently, it supports deleting all indices from a local Elasticsearch instance but is designed with flexibility in mind to support additional data sources in the future.
+
+#### How It Works
+1. **Clean Elasticsearch Data**: The script deletes all indices from the specified Elasticsearch instance. The default URL is `http://localhost:9200`, but a custom URL can be specified using the `ES_URL` environment variable.
+2. F**uture Expansion**: The script's architecture allows for the addition of other data cleaning functionalities beyond Elasticsearch.
+
+#### Example Usage
+1. Make sure the Elasticsearch server is running at the default address (`http://localhost:9200`), or set a custom address using:
+```bash
+export ES_URL=http://your-custom-es-url:9200
+```
+
+2. Run the script with:
+```bash
+make script-clean-data
+```
 
 ## Environment Setup
 To help set up common services required for testing, such as Elasticsearch, Kibana, MySQL, MongoDB, and Redis, the project provides several Docker commands via the Makefile.

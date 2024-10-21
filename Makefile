@@ -2,7 +2,7 @@ src = $(shell find . -type f -name '*.go' | grep -v "kitex_gen" | grep -v "vendo
 
 .PHONY: fmt build test clean
 .PHONY: run-docker-kibana run-docker-kibana-arm64 run-docker-es run-docker-es-arm64 run-docker-mysql run-docker-mysql-arm64 run-docker-mongo run-docker-mongo-arm64 run-docker-redis run-docker-redis-arm64
-.PHONY: script-gen-es-data
+.PHONY: script-gen-es-data script-clean-data
 
 ################################################################
 # Go
@@ -64,4 +64,7 @@ run-docker-redis-arm64:
 
 script-gen-es-data:
 	@go run cmd/es-data-loader/main.go
+
+script-clean-data:
+	@go run cmd/data-cleaner/main.go
 
