@@ -1,4 +1,4 @@
-# 主函数
+# Main Function
 main() {
     dest_path=$1
     if [ -z $dest_path ]; then
@@ -92,5 +92,5 @@ main() {
     done
 }
 
-## Execute main function
+## Execute Main Function
 main $*
