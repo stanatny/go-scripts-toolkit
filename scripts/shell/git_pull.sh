@@ -2,12 +2,27 @@
 
 # ANSI color codes
 COLOR_RESET="\033[0m"
+
 COLOR_RED="\033[31m"
 COLOR_GREEN="\033[32m"
 COLOR_YELLOW="\033[33m"
 COLOR_BLUE="\033[34m"
 COLOR_MAGENTA="\033[35m"
 COLOR_CYAN="\033[36m"
+
+BG_COLOR_RED="\033[41m"
+BG_COLOR_GREEN="\033[42m"
+BG_COLOR_YELLOW="\033[43m"
+BG_COLOR_BLUE="\033[44m"
+BG_COLOR_MAGENTA="\033[45m"
+BG_COLOR_CYAN="\033[46m"
+BG_COLOR_WHITE="\033[47m"
+BG_COLOR_BLACK="\033[40m"
+BG_COLOR_ORANGE="\033[48;5;202m"
+BG_COLOR_PURPLE="\033[48;5;93m"
+BG_COLOR_TEAL="\033[48;5;30m"
+BG_COLOR_PINK="\033[48;5;213m"
+BG_COLOR_BROWN="\033[48;5;94m"
 
 # Print a separator line
 print_separator() {
@@ -38,6 +53,9 @@ get_remote_url() {
 # Global variables to store processed directories and Git repositories
 processed_dirs=()
 git_repos=()
+
+# Record the start time of the script
+start_time=$(date +%s)
 
 # Process a Git project
 process_git_project() {
@@ -141,8 +159,11 @@ process_directory() {
             if is_git_project "$item"; then
                 process_git_project "$item"
             else
-                echo "${COLOR_CYAN}Recursing into non-Git directory: ${COLOR_YELLOW}$item${COLOR_RESET}"
-                process_directory "$item"
+                cur_item=$item
+                echo "${BG_COLOR_BROWN}${COLOR_CYAN}Recursing into non-Git directory: ${COLOR_YELLOW}$cur_item${COLOR_RESET}"
+                process_directory "$cur_item"
+                echo "${BG_COLOR_BROWN}${COLOR_CYAN}Recursion completed successfully for non-Git directory: ${COLOR_YELLOW}$cur_item${COLOR_RESET}"
+                echo
             fi
         fi
     done
@@ -162,17 +183,35 @@ print_summary() {
     for repo in "${git_repos[@]}"; do
         echo "  - ${COLOR_YELLOW}$repo${COLOR_RESET}"
     done
+
+    # Calculate and print script execution time
+    end_time=$(date +%s)
+    execution_time=$((end_time - start_time))
+    echo
+    echo "${COLOR_CYAN}Script execution time: ${COLOR_MAGENTA}${execution_time} seconds${COLOR_RESET}"
+
     print_separator
 }
 
 # Main function
 main() {
-    local dest_path=${1:-"."}  # Target path, default is the current directory
+    # Check if a path is provided as an argument
+    local dest_path=${1:-"."}  # Default to current directory if no path is provided
+
+    # Validate the provided path
+    if [ ! -d "$dest_path" ]; then
+        echo "${COLOR_RED}Error: The provided path '$dest_path' is not a valid directory.${COLOR_RESET}"
+        exit 1
+    fi
+
+    # Get the absolute path of the target directory
     local root_path
+    root_path=$(cd "$dest_path" && pwd) || {
+        echo "${COLOR_RED}Error: Failed to resolve the absolute path of '$dest_path'.${COLOR_RESET}"
+        exit 1
+    }
 
-    root_path=$(cd "$dest_path" && pwd)
-    cd "$root_path" || exit
-
+    # Start processing from the target directory
     echo "${COLOR_GREEN}Starting processing from: ${COLOR_YELLOW}$root_path${COLOR_RESET}"
     process_directory "$root_path"
 
