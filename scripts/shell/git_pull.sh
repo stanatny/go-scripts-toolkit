@@ -81,10 +81,18 @@ process_git_project() {
     echo "${COLOR_CYAN}Current branch: ${COLOR_MAGENTA}${current_branch:-'No branch found'}${COLOR_RESET}"
     echo
 
-    # Check if the current branch is master
-    local is_master=false
-    if [ "$current_branch" == "master" ]; then
-        is_master=true
+    # Determine the default branch (master/main)
+    local default_branch
+    default_branch=$(git remote show origin | grep "HEAD branch" | awk '{print $NF}')
+    if [ -z "$default_branch" ]; then
+        echo "${COLOR_RED}Unable to determine default branch. Assuming 'master'.${COLOR_RESET}"
+        default_branch="master"
+    fi
+
+    # Check if the current branch is the default branch
+    local is_default_branch=false
+    if [ "$current_branch" == "$default_branch" ]; then
+        is_default_branch=true
     fi
 
     # Check if stash is needed
@@ -101,11 +109,11 @@ process_git_project() {
     fi
     echo
 
-    # If not on master, switch to master
-    if ! $is_master; then
+    # If not on the default branch, switch to it
+    if ! $is_default_branch; then
         print_sub_separator
-        echo "${COLOR_CYAN}* Switching to master branch${COLOR_RESET}"
-        git checkout master || echo "${COLOR_RED}Failed to checkout master${COLOR_RESET}"
+        echo "${COLOR_CYAN}* Switching to default branch: ${COLOR_MAGENTA}$default_branch${COLOR_RESET}"
+        git checkout "$default_branch" || echo "${COLOR_RED}Failed to checkout $default_branch${COLOR_RESET}"
         echo
     fi
 
@@ -121,8 +129,8 @@ process_git_project() {
     git remote prune origin
     echo
 
-    # If not on master, switch back to the original branch
-    if ! $is_master; then
+    # If not on the default branch, switch back to the original branch
+    if ! $is_default_branch; then
         print_sub_separator
         echo "${COLOR_CYAN}* Switching back to branch: ${COLOR_MAGENTA}$current_branch${COLOR_RESET}"
         git checkout "$current_branch" || echo "${COLOR_RED}Failed to checkout $current_branch${COLOR_RESET}"
